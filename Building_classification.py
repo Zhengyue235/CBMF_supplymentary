@@ -64,8 +64,8 @@ train_x, X_temp, train_y, y_temp = train_test_split(x1, y1, test_size=0.3, rando
 val_x, test_x, val_y, test_y = train_test_split(X_temp, y_temp, test_size=0.5, random_state=18)
 
 param_dist = {
-    'n_estimators': [i for i in range(50, 200,50)],
-    'max_depth': [i for i in range(3, 10,1)],
+    'n_estimators': [i for i in range(50, 500,50)],
+    'max_depth': [i for i in range(3, 40,1)],
     'learning_rate': [i for i in(0.01, 0.3,0.05,0.1,0.15,0.2,0.25)],
     'subsample': [i for i in (0.4,0.8,0.5,0.6,0.7)],
     'colsample_bytree': [i for i in (0.4,0.8,0.5,0.6,0.7)],
@@ -84,17 +84,15 @@ random_search.fit(train_x, train_y)
 best_xgb_model = random_search.best_estimator_
 y_pred_best = best_xgb_model.predict( test_x)
 final_accuracy = accuracy_score(test_y.argmax(axis=1), y_pred_best.argmax(axis=1))
-print(f'Final Test Accuracy: {final_accuracy}')
-print("Best parameters found: ", random_search.best_params_)
 
 XGB_classifier = XGBClassifier(
-    learning_rate=0.05,
-    n_estimators=100,
-    max_depth=8,
+    learning_rate=best_params['learning_rate'],
+    n_estimators=best_params['n_estimators'],
+    max_depth=best_params['max_depth'],
     min_child_weight=1,
     gamma=0.1,
-    subsample=0.6,
-    colsample_bytree=0.7,
+    subsample=best_params['subsample'],
+    colsample_bytree=best_params['colsample_bytree'],
     objective='multi:softmax',
     num_class=7,
     scale_pos_weight=1,
@@ -102,7 +100,6 @@ XGB_classifier = XGBClassifier(
     random_state=17,
     eval_metric='mlogloss',
 )
-
 XGB_classifier.fit(
     train_x, train_y,
     eval_set=[(val_x, val_y)],
@@ -277,4 +274,5 @@ plt.yticks(np.arange(len(classes)))
 plot_confusion_matrix(cm_normalized, title='Normalized confusion matrix in America')
 plt.gcf().subplots_adjust(bottom=0.22)
 plt.show()
+
 
