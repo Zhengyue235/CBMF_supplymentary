@@ -57,11 +57,10 @@ for i in range(20):
     if p_value > best_p:
         best_p = p_value
         best_i = i
-print(f"\nBest Random State: {best_i}, Best p-value: {best_p:.4f}")
-print(y1.count(),Counter(y1))
 
-train_x, X_temp, train_y, y_temp = train_test_split(x1, y1, test_size=0.3, random_state=18)
-val_x, test_x, val_y, test_y = train_test_split(X_temp, y_temp, test_size=0.5, random_state=18)
+
+train_x, X_temp, train_y, y_temp = train_test_split(x1, y1, test_size=0.3, random_state=best_i)
+val_x, test_x, val_y, test_y = train_test_split(X_temp, y_temp, test_size=0.5, random_state=best_i)
 
 param_dist = {
     'n_estimators': [i for i in range(50, 500,50)],
@@ -274,5 +273,6 @@ plt.yticks(np.arange(len(classes)))
 plot_confusion_matrix(cm_normalized, title='Normalized confusion matrix in America')
 plt.gcf().subplots_adjust(bottom=0.22)
 plt.show()
+
 
 
